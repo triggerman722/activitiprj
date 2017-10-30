@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="login" name="Login" isExecutable="true">
+
+    <startEvent id="startLogin" name="Start" activiti:initiator="initiator"></startEvent>
+
+    <userTask id="enterLoginData" name="Enter Data" activiti:assignee="${initiator}" activiti:candidateGroups="managers">
+      <extensionElements>
+        <activiti:formProperty id="username" name="User Name" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="password" name="Password" type="string" required="true"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+
+    <userTask id="personalizedIntro" name="Personalized Introduction and Data Entry" activiti:assignee="${initiator}" activiti:candidateGroups="managers">
+      <extensionElements>
+        <activiti:formProperty id="personalWelcomeTime" name="Personal Welcome Time" type="date" datePattern="MM-dd-yyyy hh:mm"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+
+    <exclusiveGateway id="decision" name="Correct Password" default="automatedIntroPath"></exclusiveGateway>
+    <serviceTask id="automatedIntro" name="Generic and Automated Data Entry" activiti:class="net.mccg.web.AutomatedDataDelegate"></serviceTask>
+
+    <endEvent id="endLogin" name="End"></endEvent>
+
+    <sequenceFlow id="sid-1337EA98-7364-4198-B5D9-30F5341D6918" sourceRef="startLogin" targetRef="enterLoginData"></sequenceFlow>
+    <sequenceFlow id="sid-42BE5661-C3D5-4DE6-96F5-73D34822727A" sourceRef="enterLoginData" targetRef="decision"></sequenceFlow>
+    <sequenceFlow id="automatedIntroPath" sourceRef="decision" targetRef="automatedIntro"></sequenceFlow>
+    <sequenceFlow id="personalizedIntroPath" name="&gt;3" sourceRef="decision" targetRef="personalizedIntro">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${password = "h0ck3y"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-37A73ACA-2E23-400B-96F3-71F77738DAFA" sourceRef="automatedIntro" targetRef="endLogin"></sequenceFlow>
+    <sequenceFlow id="sid-BA6F061B-47B6-428B-8CE6-739244B14BD6" sourceRef="personalizedIntro" targetRef="endLogin"></sequenceFlow>
+  </process>
+</definitions>
